@@ -30,7 +30,8 @@ export default {
             page: "User/AddNew",
           },
         ]
-      }, {
+      },
+      {
         title: "Nhà sản xuất sản phẩm",
         root: true,
         icon: "flaticon-avatar",
@@ -39,6 +40,22 @@ export default {
           {
             title: "Danh sách nhà sản xuất",
             page: "ProductManufacturer/ProductManufacturerList",
+          },
+          {
+            title: "Thêm mới nhà sản xuất",
+            page: "User/AddNew",
+          },
+        ]
+      }, 
+      {
+        title: "Quản lý sản phẩm",
+        root: true,
+        icon: "flaticon-avatar",
+        bullet: "dot",
+        submenu: [
+          {
+            title: "Quản lý size",
+            page: "Product/SizeList",
           },
           {
             title: "Thêm mới nhà sản xuất",

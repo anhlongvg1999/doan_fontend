@@ -7,6 +7,7 @@ import ButtonLoading from '../../partials/common/ButtonLoading';
 import {
     makeStyles
 } from "@material-ui/core/styles";
+import { TYPE_SIZE } from '../../config/common/testme'
 import {
     Paper,
     Table,
@@ -24,7 +25,7 @@ import Icon from "@material-ui/core/Icon";
 import { Modal, Pagination } from "antd";
 import { showSuccessMessageIcon, showErrorMessage } from '../../actions/notification';
 import SelectForm from '../../partials/common/SelectForm';
-import "./productmanufacturer.css";
+import "./product.css";
 const useStyles1 = makeStyles(theme => ({
     root: {
         width: "100%",
@@ -52,7 +53,7 @@ export default function Product_Manufacturer(props) {
     const [isLoadSubmit, setLoadSubmit] = useState(false);
     const [dataDelete, setDataDelete] = useState({ visible: false });
     useEffect(() => {
-        searchProductManufacturer({ page: 1, limit: rowsPerPage });
+        searchSize({ page: 1, limit: rowsPerPage });
 
     }, []);
     let index = (page == 1 ? 0 : (rowsPerPage * (page - 1)));
@@ -95,15 +96,15 @@ export default function Product_Manufacturer(props) {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-        searchProductManufacturer(dataSearch);
+        searchSize(dataSearch);
     }
-    const searchProductManufacturer = (dataSearch = {}) => {
+    const searchSize = (dataSearch = {}) => {
         console.log('111111111111', dataSearch);
-        makeRequest('get', `productmanufacturer/getallProductManufacturer`, dataSearch)
+        makeRequest('get', `productsize/getProductSize`, dataSearch)
             .then(({ data }) => {
                 if (data.signal) {
                     console.log('xxxxxxxxxxxxx', data.data)
-                    const res = data.data.listProductManufacturer;
+                    const res = data.data.listSize;
                     setRow(res);
                     setTotal(data.data.total)
                 }
@@ -117,21 +118,24 @@ export default function Product_Manufacturer(props) {
             name: ''
         });
         setPage(1);
-        searchProductManufacturer({ page: 1, limit: rowsPerPage });
+        searchSize({ page: 1, limit: rowsPerPage });
     }
     const handleSubmitAdd = (e) => {
         e.preventDefault();
         if (!dataAdd.name) {
             return showErrorMessage('Vui lòng nhập tên nhà sản xuất');
         }
+        if(!dataAdd.type){
+            return showErrorMessage('Vui lòng chọn kiểu Size');
+        }
         //enableLoadSubmit();
-        makeRequest('post', `productmanufacturer/createProductManufacturer`, dataAdd)
+        makeRequest('post', `productsize/createSize`, dataAdd)
             .then(({ data }) => {
                 console.log('dataaddddddddddd', dataAdd)
                 if (data.signal) {
                     showSuccessMessageIcon('Add Successfuly!')
                     setPage(1);
-                    searchProductManufacturer({ page: 1, limit: rowsPerPage });
+                    searchSize({ page: 1, limit: rowsPerPage });
                     setDataAdd({
                         visible: false
                     })
@@ -148,7 +152,7 @@ export default function Product_Manufacturer(props) {
         setLoadDelete(true);
         hideDeleteModal();
         setLoadDelete(false);
-        makeRequest("get", `productmanufacturer/deleteProductManufacturer`, { id: dataDelete.id })
+        makeRequest("get", `productsize/deleteSize`, { id: dataDelete.id })
             .then(({ data }) => {
                 if (data.signal) {
                     showSuccessMessageIcon("Xóa thành công");
@@ -224,6 +228,13 @@ export default function Product_Manufacturer(props) {
             visible: true,
         });
     };
+    const renderStatusText = (category) => {
+        if (category == 0) {
+            return (<span className="btn btn-label-primary btn-bold btn-sm btn-icon-h" style={{ borderRadius: '.42rem' }}>Size áo</span>);
+        } else {
+            return (<span className="btn btn-label-primary btn-bold btn-sm btn-icon-h" style={{ borderRadius: '.42rem' }}>Size giày</span>);
+        }
+    }
     const onChangeUpdateValue = (key, value) => {
         setDataUpdate({
             ...dataUpdate,
@@ -244,13 +255,14 @@ export default function Product_Manufacturer(props) {
                                         <div className='form-row'>
                                             <div className='form-group col-md-2'>
                                                 <div className="form-group" style={{ display: 'flex' }} >
-                                                    <InputForm
-                                                        type="text"
-                                                        placeholder="tên nhà sản xuất"
-                                                        value={dataSearch.name || ""}
-                                                        onChangeValue={(value) => { onChangeValueSearch('name', value) }}
-                                                        focus={true}
-                                                    />
+                                                <SelectForm
+                                                                optionData={TYPE_SIZE}
+                                                                keyString="id"
+                                                                required
+                                                                labelString="name"
+                                                                value={dataSearch.type}
+                                                                onChangeValue={(value) => { onChangeValueSearch('type', value) }}
+                                                            />
                                                 </div>
                                             </div>
                                             <div className='form-group'>
@@ -279,7 +291,8 @@ export default function Product_Manufacturer(props) {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>No</TableCell>
-                                            <TableCell>Tên nhà sản xuất</TableCell>
+                                            <TableCell>Size</TableCell>
+                                            <TableCell>Kiểu size</TableCell>
                                             <TableCell>CreatedAt</TableCell>
                                             <TableCell>UpdatedAt</TableCell>
                                             <TableCell style={{ width: 150 }}>Action</TableCell>
@@ -295,6 +308,7 @@ export default function Product_Manufacturer(props) {
                                                 <TableCell>
                                                     {row.name}
                                                 </TableCell>
+                                                <TableCell>{renderStatusText(row.type)}</TableCell>
                                                 <TableCell>{moment(row.createdAt).format("HH:mm DD-MM-YYYY")}</TableCell>
                                                 <TableCell>{moment(row.updatedAt).format("HH:mm DD-MM-YYYY")}</TableCell>
                                                 <TableCell>
@@ -331,10 +345,24 @@ export default function Product_Manufacturer(props) {
                                                 <Form onSubmit={handleSubmitAdd}>
                                                     <Form.Row>
                                                         <Form.Group as={Col} controlId="formFirstName">
-                                                            <Form.Label className="starDanger">Tên nhà sản xuất</Form.Label>
-                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Tên nhà sản xuất" value={dataAdd.name ||''} onChange={(e) => {
+                                                            <Form.Label className="starDanger">Size</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Size" value={dataAdd.name ||''} onChange={(e) => {
                                                                 console.log('2222222222222222',e.target.value)
                                                                 onChangeAddValue('name',e.target.value)} }/>
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formFirstName">
+                                                        <Form.Label className="starDanger">Kiểu Size</Form.Label>
+                                                        <SelectForm
+                                                                optionData={TYPE_SIZE}
+                                                                keyString="id"
+                                                                required
+                                                                labelString="name"
+                                                                value={dataAdd.type}
+                                                                onChangeValue={(value) => { onChangeAddValue('type', value) }}
+                                                            />
+
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Button variant="primary" type="submit" ref={formAdd} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formAdd}>
@@ -360,12 +388,26 @@ export default function Product_Manufacturer(props) {
                                         <Card >
                                             <Card.Body>
                                                 <Form onSubmit={handleSubmitUpdate}>
-                                                    <Form.Row>
+                                                <Form.Row>
                                                         <Form.Group as={Col} controlId="formFirstName">
-                                                            <Form.Label className="starDanger">Tên nhà sản xuất</Form.Label>
-                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Tên nhà sản xuất" value={dataUpdate.name ||''} onChange={(e) => {
+                                                            <Form.Label className="starDanger">Size</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Size" value={dataUpdate.name ||''} onChange={(e) => {
                                                                 console.log('2222222222222222',e.target.value)
                                                                 onChangeUpdateValue('name',e.target.value)} }/>
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formFirstName">
+                                                        <Form.Label className="starDanger">Kiểu Size</Form.Label>
+                                                        <SelectForm
+                                                                optionData={TYPE_SIZE}
+                                                                keyString="id"
+                                                                required
+                                                                labelString="name"
+                                                                value={dataUpdate.type}
+                                                                onChangeValue={(value) => { onChangeUpdateValue('type', value) }}
+                                                            />
+
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Button variant="primary" type="submit" ref={formUpdate} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formUpdate}>

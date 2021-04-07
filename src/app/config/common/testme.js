@@ -34,6 +34,17 @@ export const ACTIVE_STATUS = [
     }
 
 ]
+export const TYPE_SIZE = [
+    { 
+        id: 0,
+        name: 'Size áo',
+    },
+    { 
+        id: 1,
+        name: 'Size giày',
+    }
+
+]
 export const STATUS_ANSWER = [
     { 
         id: 1,

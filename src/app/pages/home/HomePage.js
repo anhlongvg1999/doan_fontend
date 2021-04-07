@@ -12,6 +12,9 @@ const Error403 = lazy(() => import("../common/Error403"));
 const ListUser = lazy(() =>
 	import('../user/ListUser')
 );
+const ListSize = lazy(() =>
+	import('../product/SizeList')
+);
 const AddUser = lazy(() =>
 	import('../user/AddUser')
 );
@@ -36,6 +39,7 @@ export default function HomePage() {
 				<Route path="/User/List" component={ListUser} />
 				<Route path="/User/AddNew" component={AddUser} />
 				<Route path="/ProductManufacturer/ProductManufacturerList" component={ProductManufacturer}/>
+				<Route path="/Product/SizeList" component={ListSize}/>
 			</Switch>
 		</Suspense >
 	);
