@@ -243,7 +243,7 @@ export default function Product_Manufacturer(props) {
     }
     return (
         <>
-        <Link onClick={showModalAdd} Icon="" className="btn btn-primary btn-bold btn-sm btn-icon-h kt-margin-l-10">Thêm mới nhà sản xuất</Link>
+        <Link onClick={showModalAdd} Icon="" className="btn btn-primary btn-bold btn-sm btn-icon-h kt-margin-l-10">Thêm size</Link>
             <div className="row">
                 <div className="col-md-12">
                     <div className="kt-section">
