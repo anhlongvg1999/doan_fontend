@@ -12,10 +12,11 @@ const Error403 = lazy(() => import("../common/Error403"));
 const ListUser = lazy(() =>
 	import('../user/ListUser')
 );
-const ListRole = lazy(()=>
-	import('../role/Role'))
 const AddUser = lazy(() =>
 	import('../user/AddUser')
+);
+const ProductManufacturer = lazy(() =>
+	import('../productmanufacturer/ProductManufacturerList')
 );
 export default function HomePage() {
 	return (
@@ -33,10 +34,8 @@ export default function HomePage() {
 				{/* <Redirect to="Topic" /> */}						
 				{/* <Redirect to="User" /> */}
 				<Route path="/User/List" component={ListUser} />
-				{/* <Redirect to="Role" /> */}
-				<Route path="/Role/List" component={ListRole} />
 				<Route path="/User/AddNew" component={AddUser} />
-
+				<Route path="/ProductManufacturer/ProductManufacturerList" component={ProductManufacturer}/>
 			</Switch>
 		</Suspense >
 	);

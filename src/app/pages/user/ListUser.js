@@ -41,6 +41,7 @@ export default function List_User(props) {
 
     const classes1 = useStyles1();
     const formUpdate = React.createRef();
+    const formAdd = React.createRef();
     const inputNameBankRef = React.createRef();
     const [isLoadSearch, setLoadSearch] = useState(false);
     const [dataUpdate, setDataUpdate] = useState({ visible: false });
@@ -52,6 +53,7 @@ export default function List_User(props) {
     const [total, setTotal] = useState(0);
     const [dataDelete, setDataDelete] = useState({ visible: false });
     const [rows, setRow] = useState([]);
+    const [isLoadSubmit, setLoadSubmit] = useState(false);
     let index = (page == 1 ? 0 : (rowsPerPage * (page - 1)));
     useEffect(() => {
         searchUser({ page: 1, limit: rowsPerPage });
@@ -63,6 +65,9 @@ export default function List_User(props) {
             [key]: value
         })
     }
+    const disableLoadSubmit = () => {
+        setLoadSubmit(false);
+    };
     const onChangeAddValue = (key, value) => {
         setDataAdd({
             ...dataAdd,
@@ -72,7 +77,7 @@ export default function List_User(props) {
     }
     const unfilteredData = (e) => {
         setData({
-            name: ''
+            email: ''
         });
         setPage(1);
         searchUser({ page: 1, limit: rowsPerPage });
@@ -117,6 +122,8 @@ export default function List_User(props) {
                 if (data.signal) {
                     showSuccessMessageIcon("Xóa thành công");
                     let dataQuestion = rows.filter((item) => item.id !== dataDelete.id);
+                    setRow(dataQuestion);
+                    setTotal(total - 1);
                     hideDeleteModal();
                 }
             })
@@ -125,12 +132,25 @@ export default function List_User(props) {
                 console.log(err);
             });
     };
+    const clickModalAddCancel = () => {
+        setDataAdd({
+            ...dataAdd,
+            visible: false
+        })
+    }
     const clickModalUpdateCancel = () => {
         setDataUpdate({
             ...dataUpdate,
             visible: false
         })
     }
+    const submitAdd = (e) => {
+        e.preventDefault();
+        const nodeAdd = formAdd.current;
+        nodeAdd.click();
+        disableLoadSubmit(false);
+    }
+
     const hideDeleteModal = () => {
         setDataDelete({
             ...dataDelete,
@@ -195,8 +215,46 @@ export default function List_User(props) {
                 console.log('Error', err)
             })
     }
+    const showModalAdd = () => {
+        setDataAdd({
+            ...dataAdd,
+            visible: true
+        })
+    }
+    const handleSubmitAdd = (e) => {
+        e.preventDefault();
+        if (!dataAdd.email) {
+            return showErrorMessage('Vui lòng nhập email');
+        }
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(dataAdd.email)) {
+            return showErrorMessage('Vui lòng nhập đúng định dạng email');
+        }
+        if(dataAdd.password != dataAdd.confirmpassword)
+        {
+            return showErrorMessage('password không khớp');
+        }
+        //enableLoadSubmit();
+        makeRequest('post', `account/createUser`, dataAdd)
+            .then(({ data }) => {
+                console.log('dataaddddddddddd', dataAdd)
+                if (data.signal) {
+                    showSuccessMessageIcon('Add Successfuly!')
+                    setPage(1);
+                    searchUser({ page: 1, limit: rowsPerPage });
+                    setDataAdd({
+                        visible: false
+                    })
+                } else {
+                    showErrorMessage(data.message);
+                }
+                disableLoadSubmit();
+            })
+            .catch(err => {
+                disableLoadSubmit();
+            })
+    }
     return (<>
-        <Link Icon="" className="btn btn-primary btn-bold btn-sm btn-icon-h kt-margin-l-10">Add New User</Link>
+        <Link onClick={showModalAdd} Icon="" className="btn btn-primary btn-bold btn-sm btn-icon-h kt-margin-l-10">Add New User</Link>
 
         <div class="row">
             <div className="col-md-12">
@@ -305,7 +363,7 @@ export default function List_User(props) {
                             )}
                         </Paper>
                         <Modal
-                            title="Xóa câu hỏi"
+                            title="Xóa người dùng"
                             visible={dataDelete.visible}
                             onOk={deleteAction}
                             onCancel={hideDeleteModal}
@@ -343,43 +401,43 @@ export default function List_User(props) {
                                             <Card.Body>
                                                 <Form onSubmit={handleSubmitUpdate}>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="formBasicNameBank">
+                                                        <Form.Group as={Col} controlId="formFirstName">
                                                             <Form.Label className="starDanger">First Name</Form.Label>
                                                             <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="First Name" value={dataUpdate.firstname || ''} onChange={(e) => onChangeUpdateValue('firstname', e.target.value)} />
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="formBasicNameBank">
+                                                        <Form.Group as={Col} controlId="formLastName">
                                                             <Form.Label className="starDanger">Last Name</Form.Label>
                                                             <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Last Name" value={dataUpdate.lastname || ''} onChange={(e) => onChangeUpdateValue('lastname', e.target.value)} />
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="formBasicNameBank">
+                                                        <Form.Group as={Col} controlId="formEmail">
                                                             <Form.Label className="starDanger">Email</Form.Label>
                                                             <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Email" value={dataUpdate.email || ''} onChange={(e) => onChangeUpdateValue('email', e.target.value)} />
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="formBasicNameBank">
+                                                        <Form.Group as={Col} controlId="formAddress">
                                                             <Form.Label className="starDanger">Address</Form.Label>
                                                             <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Address" value={dataUpdate.address || ''} onChange={(e) => onChangeUpdateValue('address', e.target.value)} />
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="formBasicNameBank">
+                                                        <Form.Group as={Col} controlId="formCity">
                                                             <Form.Label className="starDanger">City</Form.Label>
                                                             <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="City" value={dataUpdate.city || ''} onChange={(e) => onChangeUpdateValue('city', e.target.value)} />
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col} controlId="formBasicNameBank">
+                                                        <Form.Group as={Col} controlId="formMobile">
                                                             <Form.Label className="starDanger">Mobile</Form.Label>
                                                             <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Mobile" value={dataUpdate.mobile || ''} onChange={(e) => onChangeUpdateValue('mobile', e.target.value)} />
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col}>
+                                                        <Form.Group as={Col} controlId="formActive">
                                                             <Form.Label className="starDanger">Active</Form.Label>
                                                             <SelectForm
                                                                 optionData={ACTIVE_STATUS}
@@ -392,7 +450,7 @@ export default function List_User(props) {
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Form.Row>
-                                                        <Form.Group as={Col}>
+                                                        <Form.Group as={Col} controlId="formBirthday">
                                                             <Form.Label className="starDanger">Birthday</Form.Label>
                                                             <TextField
                                                                 id="date"
@@ -410,6 +468,97 @@ export default function List_User(props) {
                                                         </Form.Group>
                                                     </Form.Row>
                                                     <Button variant="primary" type="submit" ref={formUpdate} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formUpdate}>
+                                                    </Button>
+                                                </Form>
+                                            </Card.Body>
+                                        </Card>
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal>
+                        <Modal
+                            title='Add New User'
+                            visible={dataAdd.visible}
+                            cancelText='Cancel'
+                            okText='Save'
+                            onCancel={clickModalAddCancel}
+                            onOk={submitAdd}
+                        >
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <div className="kt-section">
+                                        <Card >
+                                            <Card.Body>
+                                                <Form onSubmit={handleSubmitAdd}>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formFirstName">
+                                                            <Form.Label className="starDanger">First Name</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="First Name" value={dataAdd.firstname || ''} onChange={(e) => onChangeAddValue('firstname', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formLastName">
+                                                            <Form.Label className="starDanger">Last Name</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Last Name" value={dataAdd.lastname || ''} onChange={(e) => onChangeAddValue('lastname', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formEmail">
+                                                            <Form.Label className="starDanger">Email</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Email" value={dataAdd.email || ''} onChange={(e) => onChangeAddValue('email', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formPassword">
+                                                            <Form.Label className="starDanger">Password</Form.Label>
+                                                            <Form.Control required type="password" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Password" value={dataAdd.password || ''} onChange={(e) => onChangeAddValue('password', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formConfirmPassword">
+                                                            <Form.Label className="starDanger">Confirm Password</Form.Label>
+                                                            <Form.Control required type="password" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="ConfirmPassword" value={dataAdd.confirmpassword || ''} onChange={(e) =>{
+                                                                onChangeAddValue('confirmpassword', e.target.value)
+                                                            }
+                                                                 } />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formAddress">
+                                                            <Form.Label className="starDanger">Address</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Address" value={dataAdd.address || ''} onChange={(e) => onChangeAddValue('address', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formCity">
+                                                            <Form.Label className="starDanger">City</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="City" value={dataAdd.city || ''} onChange={(e) => onChangeAddValue('city', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlId="formMobile">
+                                                            <Form.Label className="starDanger">Mobile</Form.Label>
+                                                            <Form.Control required type="text" autoFocus maxLength={255} ref={inputNameBankRef} placeholder="Mobile" value={dataAdd.mobile || ''} onChange={(e) => onChangeAddValue('mobile', e.target.value)} />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Form.Row>
+                                                        <Form.Group as={Col} controlI="formBirthday">
+                                                            <Form.Label className="starDanger">Birthday</Form.Label>
+                                                            <TextField
+                                                                id="date"
+                                                                type="date"
+                                                                defaultValue="2017-05-24"
+                                                                InputLabelProps={{
+                                                                    shrink: true,
+                                                                }}
+                                                                required
+                                                                onChange={(value) => {
+                                                                    onChangeAddValue("birthday", value.target.value)
+                                                                }}
+                                                            />
+                                                        </Form.Group>
+                                                    </Form.Row>
+                                                    <Button variant="primary" type="submit" ref={formAdd} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formAdd}>
                                                     </Button>
                                                 </Form>
                                             </Card.Body>
