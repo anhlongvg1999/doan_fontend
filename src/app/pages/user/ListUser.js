@@ -54,7 +54,7 @@ export default function List_User(props) {
     const [dataDelete, setDataDelete] = useState({ visible: false });
     const [rows, setRow] = useState([]);
     const [isLoadSubmit, setLoadSubmit] = useState(false);
-    let index = (page == 1 ? 0 : (rowsPerPage * (page - 1)));
+    let index = (page === 1 ? 0 : (rowsPerPage * (page - 1)));
     useEffect(() => {
         searchUser({ page: 1, limit: rowsPerPage });
 
@@ -87,7 +87,7 @@ export default function List_User(props) {
         searchUser({ ...dataSearch, page: newPage, limit: rowsPerPage });
     };
     const renderStatusText = (category) => {
-        if (category == 0) {
+        if (category === 0) {
             return (<span className="btn btn-label-primary btn-bold btn-sm btn-icon-h" style={{ borderRadius: '.42rem' }}>Active</span>);
         } else {
             return (<span className="btn btn-label-warning btn-bold btn-sm btn-icon-h" style={{ borderRadius: '.42rem' }}>De-active</span>);
@@ -199,7 +199,7 @@ export default function List_User(props) {
                     });
 
                     let dataRow = rows.map(it => {
-                        if (it.id == dataUpdate.id) {
+                        if (it.id === dataUpdate.id) {
                             return dataUpdate;
                         }
                         return it;
@@ -229,7 +229,7 @@ export default function List_User(props) {
         if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(dataAdd.email)) {
             return showErrorMessage('Vui lòng nhập đúng định dạng email');
         }
-        if(dataAdd.password != dataAdd.confirmpassword)
+        if(dataAdd.password !== dataAdd.confirmpassword)
         {
             return showErrorMessage('password không khớp');
         }
@@ -467,7 +467,7 @@ export default function List_User(props) {
                                                             />
                                                         </Form.Group>
                                                     </Form.Row>
-                                                    <Button variant="primary" type="submit" ref={formUpdate} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formUpdate}>
+                                                    <Button variant="primary" type="submit" visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formUpdate}>
                                                     </Button>
                                                 </Form>
                                             </Card.Body>
@@ -558,7 +558,7 @@ export default function List_User(props) {
                                                             />
                                                         </Form.Group>
                                                     </Form.Row>
-                                                    <Button variant="primary" type="submit" ref={formAdd} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formAdd}>
+                                                    <Button variant="primary" type="submit" visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formAdd}>
                                                     </Button>
                                                 </Form>
                                             </Card.Body>

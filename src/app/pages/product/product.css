@@ -58,4 +58,9 @@
       top: 0px;
     }
   }
+  .ckeditor {
+    height: 75%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
   

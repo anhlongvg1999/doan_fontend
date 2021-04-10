@@ -53,6 +53,10 @@ export default {
             title: "Quản lý size",
             page: "Product/SizeList",
           },
+          {
+            title: "Danh sách sản phẩm",
+            page: "Product/ProductList",
+          },
         ]
       }, 
     ],

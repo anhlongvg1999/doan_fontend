@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import makeRequest from '../../libs/request';
 import { showSuccessMessageIcon, showErrorMessage } from '../../actions/notification';
 import ButtonLoading from "../../partials/common/ButtonLoading";
 import { Link } from 'react-router-dom';
-import SelectForm from '../../partials/common/SelectForm';
 import {
     TextField,
-    Button
 } from "@material-ui/core";
 
 import { Form, Card, Col } from "react-bootstrap";
@@ -15,9 +13,6 @@ const Add_User = (props) => {
     const inputNameBankRef = React.createRef();
     const [isLoadSubmit, setLoadSubmit] = useState(false);
     const [dataAdd, setDataAdd] = useState({});
-    const enableLoadSubmit = () => {
-        setLoadSubmit(true);
-    };
 
     const disableLoadSubmit = () => {
         setLoadSubmit(false);
@@ -36,7 +31,7 @@ const Add_User = (props) => {
         if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(dataAdd.email)) {
             return showErrorMessage('Vui lòng nhập đúng định dạng email');
         }
-        if(dataAdd.password != dataAdd.confirmpassword)
+        if(dataAdd.password !== dataAdd.confirmpassword)
         {
             return showErrorMessage('password không khớp');
         }
