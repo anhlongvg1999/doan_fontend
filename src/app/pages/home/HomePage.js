@@ -29,16 +29,10 @@ export default function HomePage() {
 		<Suspense fallback={<LayoutSplashScreen />}>
 			<Switch>
 				{
-					/* Redirect from root URL to /dashboard. */
 					<Redirect exact from="/" to="/dashboard" />
 				}
-				{/* Route other */}
 				<Route path="/dashboard" component={Dashboard} />
-
-				{/* <Redirect to="Error403" /> */}
 				<Route path="/Error403" component={Error403} />
-				{/* <Redirect to="Topic" /> */}						
-				{/* <Redirect to="User" /> */}
 				<Route path="/User/List" component={ListUser} />
 				<Route path="/User/AddNew" component={AddUser} />
 				<Route path="/ProductManufacturer/ProductManufacturerList" component={ProductManufacturer}/>

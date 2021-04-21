@@ -58,6 +58,22 @@ export default {
             page: "Product/ProductList",
           },
         ]
+      },
+      {
+        title: "Quản lý đơn hàng",
+        root: true,
+        icon: "flaticon-avatar",
+        bullet: "dot",
+        submenu: [
+          {
+            title: "Quản lí nhà vận chuyển",
+            page: "Product/SizeList",
+          },
+          {
+            title: "Quản lí đơn hàng",
+            page: "Product/ProductList",
+          },
+        ]
       }, 
     ],
   },
