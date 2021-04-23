@@ -73,6 +73,8 @@ export default function Product_List(props) {
     const [isLoadDelete, setLoadDelete] = useState(false);
     const [isLoadDeleteSale, setLoadDeleteSale] = useState(false);
     const [isLoadSubmit, setLoadSubmit] = useState(false);
+    const [isShowSizeGroup, setShowSizeGroup] = useState(false);
+
     useEffect(() => {
         searchSize({ page: 1, limit: rowsPerPage });
         getProductManufacturer();
@@ -228,6 +230,21 @@ export default function Product_List(props) {
             return (<span className="btn btn-label-warning btn-bold btn-sm btn-icon-h" style={{ borderRadius: '.42rem' }}>Hết hàng</span>);
         }
     }
+    const Renderlistsize = () => {
+        return (
+            <Form.Group as={Col}>
+                <Form.Label className="starDanger">Chọn Size</Form.Label>
+                {/* <Select
+                components={animatedComponents}
+                isMulti={false}
+                options={dataSize.map(it => { return { value: it.id, label: it.name } })}
+                onChange={setSelectedlistSize}
+
+            //value={dataUpdateTopic || []}
+            /> */}
+            </Form.Group>
+        )
+    }
     const deleteAction = () => {
         setLoadDelete(true);
         hideDeleteModal();
@@ -251,11 +268,11 @@ export default function Product_List(props) {
         setLoadDelete(true);
         hideDeleteSaleModal();
         setLoadDelete(false);
-        makeRequest("post", `product/updateSaleProduct`, { id: dataDeleteSale.id.toString(),sale:'0' })
+        makeRequest("post", `product/updateSaleProduct`, { id: dataDeleteSale.id.toString(), sale: '0' })
             .then(({ data }) => {
                 if (data.signal) {
                     showSuccessMessageIcon("Xóa thành công");
-                    rows.forEach((item) => {if(item.id === dataDeleteSale.id){item.sale = 0}});
+                    rows.forEach((item) => { if (item.id === dataDeleteSale.id) { item.sale = 0 } });
                     console.log(rows)
                     setRow(rows);
                     hideDeleteModal();
@@ -356,8 +373,9 @@ export default function Product_List(props) {
                 console.log('Error', err)
             })
     }
+
     const handleSubmitSale = (e) => {
-        console.log('11111111111111111111111111111111111111',dataSale)
+        console.log('11111111111111111111111111111111111111', dataSale)
         e.preventDefault();
         makeRequest('post', `product/updateSaleProduct`, dataSale)
             .then(({ data }) => {
@@ -448,6 +466,14 @@ export default function Product_List(props) {
             ...dataUpdate,
             [key]: value
         })
+    }
+    const handleChangePage = (newPage) => {
+        setPage(newPage);
+        searchSize({ ...dataSearch, page: newPage, limit: rowsPerPage });
+    };
+
+    const onClickShowGroupSize = () => {
+        setShowSizeGroup(true);
     }
     const animatedComponents = makeAnimated();
     return (
@@ -580,7 +606,7 @@ export default function Product_List(props) {
                                 </Table>
                                 {total > rowsPerPage && (
                                     <div className="customSelector custom-svg">
-                                        <Pagination className="pagination-crm" current={page} pageSize={rowsPerPage} total={total} />
+                                        <Pagination className="pagination-crm" current={page} pageSize={rowsPerPage} total={total} onChange={(p, s) => handleChangePage(p)} />
                                     </div>
                                 )}
                             </Paper>
@@ -674,20 +700,13 @@ export default function Product_List(props) {
                                                             onChangeValue={(value) => { getListSize('typesize', value) }}
                                                         />
                                                     </Form.Group>
+                                                    {isShowSizeGroup &&
+                                                        <Renderlistsize />}
                                                     {dataAdd.typesize ?
-                                                        <Form.Group as={Col} controlId="formProductPriceold">
-                                                            <Form.Label className="starDanger">Chọn Size</Form.Label>
-                                                            <Select
-                                                                components={animatedComponents}
-                                                                isMulti={false}
-                                                                options={dataSize.map(it => { return { value: it.id, label: it.name } })}
-                                                                onChange={setSelectedlistSize}
-
-                                                            //value={dataUpdateTopic || []}
-                                                            />
-                                                        </Form.Group>
+                                                        <>
+                                                            <Link onClick={showModalDetail} Icon="" className="btn btn-primary btn-bold btn-sm btn-icon-h kt-margin-l-10">Thêm mới size</Link>
+                                                        </>
                                                         : null
-
                                                     }
                                                     <Button variant="primary" type="submit" ref={formAdd} visible={false} style={{ width: 0, height: 0, paddingTop: 0, paddingBottom: 0, paddingRight: 0, paddingLeft: 0 }} ref={formAdd}>
                                                     </Button>
@@ -797,9 +816,9 @@ export default function Product_List(props) {
                                                     {dataDetail.sale > 0 ? <Form.Row>
                                                         <Form.Group as={Col} controlId="FormProductName">
                                                             <Form.Label className="starDanger">Giá bán sau sale</Form.Label>
-                                                            <Form.Control readOnly type="text" autoFocus maxLength={255} ref={inputDescriptionRef} value={dataDetail.cost - (dataDetail.cost*dataDetail.sale)/100} />
+                                                            <Form.Control readOnly type="text" autoFocus maxLength={255} ref={inputDescriptionRef} value={dataDetail.cost - (dataDetail.cost * dataDetail.sale) / 100} />
                                                         </Form.Group>
-                                                    </Form.Row>: null}
+                                                    </Form.Row> : null}
                                                     <Form.Row>
                                                         <Form.Group as={Col} controlId="FormProductName">
                                                             <Form.Label className="starDanger">Size</Form.Label>
@@ -922,7 +941,7 @@ export default function Product_List(props) {
                                         <Card>
                                             <Card.Body>
                                                 <Form onSubmit={handleSubmitSale}>
-                                                <Form.Group as={Col} controlId="formProductNumber">
+                                                    <Form.Group as={Col} controlId="formProductNumber">
                                                         <Form.Label className="starDanger">Phần trăm sale</Form.Label>
                                                         <Form.Control required type="number" autoFocus min="1" max="100" ref={inputNameBankRef} value={dataSale.sale || '1'} onChange={(e) => onChangeSale('sale', e.target.value)} />
                                                     </Form.Group>
